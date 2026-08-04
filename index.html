@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hey Beautiful...</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- These are for the animations and photo gallery -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/css/lightgallery.min.css" />
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        /* Falling hearts animation */
+        .heart {
+            position: fixed;
+            font-size: 24px;
+            animation: fall linear infinite;
+            opacity: 0.7;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        @keyframes fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        /* Entry page styling */
+        .entry-container {
+            position: relative;
+            z-index: 10;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+        
+        .entry-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 50px 40px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            animation: pulse-border 2s ease-in-out infinite;
+            border: 3px solid transparent;
+        }
+        
+        @keyframes pulse-border {
+            0%, 100% {
+                border-color: #ec4899;
+                box-shadow: 0 20px 60px rgba(236, 72, 153, 0.3);
+            }
+            50% {
+                border-color: #8b5cf6;
+                box-shadow: 0 20px 60px rgba(139, 92, 246, 0.5);
+            }
+        }
+        
+        .entry-title {
+            font-family: 'Mochiy Pop One', cursive;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .entry-subtitle {
+            font-size: 1.1rem;
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
+            background: #f9fafb;
+        }
+        
+        .password-input:focus {
+            border-color: #8b5cf6;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+        }
+        
+        .password-input.error {
+            border-color: #ef4444;
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .start-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            letter-spacing: 1px;
+        }
+        
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
+        }
+        
+        .start-btn:active {
+            transform: translateY(0);
+        }
+        
+        .error-message {
+            color: #ef4444;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            min-height: 24px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .error-message.show {
+            opacity: 1;
+        }
+        
+        /* Hide main content initially */
+        #mainContent {
+            display: none;
+        }
+        
+        #mainContent.show {
+            display: block;
+        }
+        
+        /* Custom styles from style.css */
+        .font-anime {
+            font-family: 'Mochiy Pop One', sans-serif;
+        }
+        .text-sakura {
+            color: #FFB7C5;
+        }
+        .bg-navy {
+            background-color: #2c3e50;
+        }
+        #sakura-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            pointer-events: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Falling hearts will be added by JavaScript -->
+    
+    <!-- ENTRY PAGE -->
+    <div class="entry-container" id="entryPage">
+        <div class="entry-card">
+            <div class="text-6xl mb-4">💕</div>
+            <h1 class="entry-title">Hey Beautiful...</h1>
+            <p class="entry-subtitle">I have something special to show you.</p>
+            
+            <div class="space-y-4">
+                <input 
+                    type="password" 
+                    id="passwordInput" 
+                    class="password-input" 
+                    placeholder="Enter the secret code..."
+                    autocomplete="off"
+                >
+                <button class="start-btn" id="startBtn">✨ Start Journey ✨</button>
+                <div class="error-message" id="errorMessage">❌ Oops! That's not the right code. Try again!</div>
+            </div>
+            
+            <div class="mt-6 text-sm text-gray-400">
+                <span>💫 Hint: The year something magical happened</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- MAIN BIRTHDAY CONTENT -->
+    <div id="mainContent">
+        <!-- Your original HTML content -->
+        <div class="scroll-smooth">
+            <audio id="bg-music" loop>
+                <source src="img/music.mp3" type="audio/mpeg">
+            </audio>
+            
+            <button id="play-audio-btn" class="fixed bottom-4 left-4 z-50 bg-pink-500 hover:bg-pink-600 text-white font-bold py-2 px-4 rounded-full shadow-lg transition-all duration-300">
+                🎵 Play Music
+            </button>
+            
+            <canvas id="sakura-canvas"></canvas>
+
+            <!-- Section 1: Hero Welcome -->
+            <header class="h-screen relative flex items-center justify-center text-white overflow-hidden">
+                <video autoplay loop muted playsinline class="absolute top-0 left-0 w-full h-full object-cover z-[-1]">
+                    <source src="img/sa.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+                <div class="text-center z-10 p-4" data-aos="fade-in" data-aos-duration="1500">
+                    <h1 class="text-5xl md:text-7xl font-anime drop-shadow-lg">Happy Birthday, Purity 💕💖!</h1>
+                    <p class="mt-4 text-xl font-semibold">Celebrating a wonderful journey of...</p>
+                    <div id="countdown" class="mt-6 text-2xl font-semibold tracking-widest leading-relaxed"></div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="container mx-auto p-6 md:p-12">
+
+                <!-- Section 2: A Letter For You -->
+                <section class="my-16 md:my-24 max-w-3xl mx-auto text-center" data-aos="fade-up">
+                    <h2 class="text-4xl md:text-5xl font-anime text-sakura mb-8 drop-shadow-sm">A Special Message For You</h2>
+                    <div class="text-left text-lg leading-relaxed space-y-4 bg-white p-8 rounded-lg shadow-lg">
+                        <p>Hey <b>Twinnie</b>,</p>
+                        <p>Happy Birthday to one of the few people who proves that distance has nothing on a genuine friendship.</p>
+       <p> Even though we're miles apart, I'm grateful that you've remained a constant source of laughter, support and good memories. Some friendships are measured by how often people meet but ours is measured by how deeply we stay connected, no matter the distance.</p>
+                        <p>I hope this new year of your life brings you opportunities that excite you, peace that grounds you and happiness that stays with you every day. Keep chasing your dreams, keep being your amazing self and never forget that you have a friend cheering for you from afar.
+<p>Have the most wonderful birthday, you deserve every smile, every blessing and every beautiful surprise today. I can't wait for the day we celebrate together. Until then, enjoy every moment and make this year your best one yet.</p>
+                        <p>Happy Birthday Purity🎉❤️</p>
+                        <p class="text-right mt-8">
+                            Regards<br>
+                            <b>Vale</b><br>
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Section 3: The Timeline -->
+                <section class="my-16 md:my-24">
+                    <h2 class="text-4xl md:text-5xl font-anime text-center mb-12" data-aos="fade-up">Your Story Arc</h2>
+                    <div class="space-y-16">
+                        <div class="flex flex-col md:flex-row items-center gap-8" data-aos="fade-right">
+                            <img src="img/jammu.png" alt="Add photo 1" class="w-full md:w-1/2 rounded-lg shadow-xl border-4 border-white">
+                            <div class="text-center md:text-left">
+                                <h3 class="text-2xl font-anime text-sakura">The girl herself</h3>
+                                <p class="mt-2 text-lg">Chasing the sun and catching good vibes. ✨</p>
+                                <br>
+                            </div>
+                        </div>
+                        <div class="flex flex-col md:flex-row-reverse items-center gap-8" data-aos="fade-left">
+                            <img src="img/V.png" alt="Add photo 2" class="w-full md:w-1/2 rounded-lg shadow-xl border-4 border-white">
+                            <div class="text-center md:text-right">
+                                <h3 class="text-2xl font-anime text-sakura">Sunshine Girl ☀️</h3>
+                                <p class="mt-2 text-lg">Smiling her way through every little moment.</p>
+                                <br>
+                            </div>
+                        </div>
+                        <div class="flex flex-col md:flex-row items-center gap-8" data-aos="fade-right">
+                            <img src="img/A.png" alt="Add photo 3" class="w-full md:w-1/2 rounded-lg shadow-xl border-4 border-white">
+                            <div class="text-center md:text-left">
+                                <h3 class="text-2xl font-anime text-sakura">Blooming Beautiful 🌷</h3>
+                                <p class="mt-2 text-lg">Blossoming into the best version of herself.</p>
+                                <br>
+                            </div>
+                        </div>
+                        <div class="flex flex-col md:flex-row-reverse items-center gap-8" data-aos="fade-left">
+                            <img src="img/L.png" alt="Add photo4" class="w-full md:w-1/2 rounded-lg shadow-xl border-4 border-white">
+                            <div class="text-center md:text-right">
+                                <h3 class="text-2xl font-anime text-sakura">Golden Hour Glow ✨</h3>
+                                <p class="mt-2 text-lg">Some light comes from the sun, some comes from within.</p>
+                                <br>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 4: Hall of Fame -->
+                <section class="my-16 md:my-24">
+                    <h2 class="text-4xl md:text-5xl font-anime text-center mb-12" data-aos="fade-up">Hall of Fame</h2>
+                    <div class="relative">
+                        <button id="scroll-left-btn" class="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition-opacity opacity-0 md:opacity-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-sakura" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                        </button>
+                        <button id="scroll-right-btn" class="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition-opacity opacity-0 md:opacity-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-sakura" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                        </button>
+                        <div id="hall-of-fame-scroller" class="flex overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide p-4 -mx-4">
+                            <div class="flex snap-x snap-mandatory gap-8">
+                                <div class="snap-center flex-shrink-0 w-10/12 sm:w-1/2 md:w-1/3 lg:w-1/4" data-aos="fade-up" data-aos-delay="100">
+                                    <div class="bg-white p-6 rounded-lg shadow-lg text-center h-full">
+                                        <img src="img/P.png" alt="Photo 1" class="w-full h-80 object-cover rounded-md mb-4">
+                                        <h3 class="text-2xl font-anime text-sakura">P</h3>
+                                        <p class="mt-2">Pure at heart.</p>
+                                    </div>
+                                </div>
+                                <div class="snap-center flex-shrink-0 w-10/12 sm:w-1/2 md:w-1/3 lg:w-1/4" data-aos="fade-up" data-aos-delay="200">
+                                    <div class="bg-white p-6 rounded-lg shadow-lg text-center h-full">
+                                        <img src="img/U.png" alt="Photo 2" class="w-full h-80 object-cover rounded-md mb-4">
+                                        <h3 class="text-2xl font-anime text-sakura">U</h3>
+                                        <p class="mt-2">Unshaken by the world's negativity.</p>
+                                    </div>
+                                </div>
+                                <div class="snap-center flex-shrink-0 w-10/12 sm:w-1/2 md:w-1/3 lg:w-1/4" data-aos="fade-up" data-aos-delay="300">
+                                    <div class="bg-white p-6 rounded-lg shadow-lg text-center h-full">
+                                        <img src="img/R.png" alt="Photo 3" class="w-full h-80 object-cover rounded-md mb-4">
+                                        <h3 class="text-2xl font-anime text-sakura">R</h3>
+                                        <p class="mt-2">Resilient in spirit.</p>
+                                    </div>
+                                </div>
+                                <div class="snap-center flex-shrink-0 w-10/12 sm:w-1/2 md:w-1/3 lg:w-1/4" data-aos="fade-up" data-aos-delay="400">
+                                    <div class="bg-white p-6 rounded-lg shadow-lg text-center h-full">
+                                        <img src="img/I.png" alt="Photo 4" class="w-full h-80 object-cover rounded-md mb-4">
+                                        <h3 class="text-2xl font-anime text-sakura">I</h3>
+                                        <p class="mt-2">Inspired by grace, not perfection.</p>
+                                    </div>
+                                </div>
+                                <div class="snap-center flex-shrink-0 w-10/12 sm:w-1/2 md:w-1/3 lg:w-1/4" data-aos="fade-up" data-aos-delay="500">
+                                    <div class="bg-white p-6 rounded-lg shadow-lg text-center h-full">
+                                        <img src="img/T.png" alt="Photo 5" class="w-full h-80 object-cover rounded-md mb-4">
+                                        <h3 class="text-2xl font-anime text-sakura">T</h3>
+                                        <p class="mt-2">True to herself.</p>
+                                    </div>
+                                </div>
+                                <div class="snap-center flex-shrink-0 w-10/12 sm:w-1/2 md:w-1/3 lg:w-1/4" data-aos="fade-up" data-aos-delay="600">
+                                    <div class="bg-white p-6 rounded-lg shadow-lg text-center h-full">
+                                        <img src="img/Y.png" alt="Photo 6" class="w-full h-80 object-cover rounded-md mb-4">
+                                        <h3 class="text-2xl font-anime text-sakura">Y</h3>
+                                        <p class="mt-2">Yielding to the needs of others.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 5: The Gallery -->
+                <section class="my-16 md:my-24">
+                    <h2 class="text-4xl md:text-5xl font-anime text-center mb-12" data-aos="fade-up">The Y.V.A. Collection</h2>
+                    <p class="text-center text-lg -mt-8 mb-12">(Your Very-own Adventures)</p>
+                    <div id="lightgallery" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <a href="img/1.png" data-aos="zoom-in" class="block w-full h-48 md:h-64">
+                            <img src="img/1.png" class="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300 w-full h-full object-cover border-4 border-white" alt="Memory 1">
+                        </a>
+                        <a href="img/2.png" data-aos="zoom-in" data-aos-delay="100" class="block w-full h-48 md:h-64">
+                            <img src="img/2.png" class="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300 w-full h-full object-cover border-4 border-white" alt="Memory 2">
+                        </a>
+                        <a href="img/3.png" data-aos="zoom-in" data-aos-delay="200" class="block w-full h-48 md:h-64">
+                            <img src="img/3.png" class="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300 w-full h-full object-cover border-4 border-white" alt="Memory 3">
+                        </a>
+                        <a href="img/4.png" data-aos="zoom-in" data-aos-delay="300" class="block w-full h-48 md:h-64">
+                            <img src="img/4.png" class="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300 w-full h-full object-cover border-4 border-white" alt="Memory 4">
+                        </a>
+                        <a href="img/5.png" data-aos="zoom-in" data-aos-delay="400" class="block w-full h-48 md:h-64">
+                            <img src="img/5.png" class="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300 w-full h-full object-cover border-4 border-white" alt="Memory 5">
+                        </a>
+                        <a href="img/6.png" data-aos="zoom-in" data-aos-delay="500" class="block w-full h-48 md:h-64">
+                            <img src="img/6.png" class="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300 w-full h-full object-cover border-4 border-white" alt="Memory 6">
+                        </a>
+                        <a href="img/7.png" data-aos="zoom-in" data-aos-delay="600" class="block w-full h-48 md:h-64">
+                            <img src="img/7.png" class="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300 w-full h-full object-cover border-4 border-white" alt="Memory 7">
+                        </a>
+                        <a href="img/8.png" data-aos="zoom-in" data-aos-delay="700" class="block w-full h-48 md:h-64">
+                            <img src="img/8.png" class="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300 w-full h-full object-cover border-4 border-white" alt="Memory 8">
+                        </a>
+                        <a href="img/9.png" data-aos="zoom-in" data-aos-delay="800" class="block w-full h-48 md:h-64">
+                            <img src="img/9.png" class="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300 w-full h-full object-cover border-4 border-white" alt="Memory 9">
+                        </a>
+                        <a href="img/10.png" data-aos="zoom-in" data-aos-delay="900" class="block w-full h-48 md:h-64">
+                            <img src="img/10.png" class="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300 w-full h-full object-cover border-4 border-white" alt="Memory 10">
+                        </a>
+                        <a href="img/11.png" data-aos="zoom-in" data-aos-delay="1000" class="block w-full h-48 md:h-64">
+                            <img src="img/11.png" class="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300 w-full h-full object-cover border-4 border-white" alt="Memory 11">
+                        </a>
+                        <a href="img/12.png" data-aos="zoom-in" data-aos-delay="1100" class="block w-full h-48 md:h-64">
+                            <img src="img/12.png" class="rounded-lg shadow-lg hover:scale-105 transition-transform duration-300 w-full h-full object-cover border-4 border-white" alt="Memory 12">
+                        </a>
+                    </div>
+                </section>
+
+                <!-- Section 6: Finale -->
+                <section class="my-16 md:my-24" data-aos="fade-up">
+                    <h2 class="text-4xl md:text-5xl font-anime text-center mb-4">Happy Birthday Twinnie!</h2>
+                    <div class="max-w-4xl mx-auto rounded-lg shadow-2xl overflow-hidden bg-navy p-8 text-white text-center">
+                        <p class="text-xl">🎂 Wishing you all the happiness in the world! 🎂</p>
+                    </div>
+                </section>
+            </main>
+
+            <!-- Footer -->
+            <footer class="bg-navy text-white p-8 text-center">
+                <p>Enjoy your day to the fullest.</p>
+                <p class="text-sm opacity-70 mt-2">Hope you liked it...</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.7.1/lightgallery.min.js"></script>
+
+    <script>
+        // ===== FALLING HEARTS ANIMATION =====
+        function createHearts() {
+            const emojis = ['❤️', '💕', '💖', '💗', '💝', '✨', '🌸'];
+            
+            for (let i = 0; i < 30; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.fontSize = (Math.random() * 20 + 14) + 'px';
+                heart.style.animationDuration = (Math.random() * 8 + 6) + 's';
+                heart.style.animationDelay = (Math.random() * 10) + 's';
+                document.body.appendChild(heart);
+            }
+        }
+        
+        createHearts();
+        
+        // ===== PASSWORD PROTECTION =====
+        const correctPassword = '2005';
+        const passwordInput = document.getElementById('passwordInput');
+        const startBtn = document.getElementById('startBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const entryPage = document.getElementById('entryPage');
+        const mainContent = document.getElementById('mainContent');
+        
+        function checkPassword() {
+            const enteredPassword = passwordInput.value.trim();
+            
+            if (enteredPassword === correctPassword) {
+                errorMessage.classList.remove('show');
+                passwordInput.classList.remove('error');
+                
+                entryPage.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+                entryPage.style.opacity = '0';
+                entryPage.style.transform = 'scale(0.9)';
+                
+                setTimeout(() => {
+                    entryPage.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                    document.body.style.height = 'auto';
+                    mainContent.classList.add('show');
+                    
+                    // Initialize AOS
+                    if (typeof AOS !== 'undefined') {
+                        AOS.init({
+                            duration: 800,
+                            once: true,
+                        });
+                    }
+                    
+                    // Initialize lightGallery
+                    if (typeof lightGallery !== 'undefined') {
+                        lightGallery(document.getElementById('lightgallery'), {
+                            speed: 500,
+                            download: false
+                        });
+                    }
+                    
+                    // Initialize all other functions
+                    initializeBirthdayPage();
+                    
+                }, 800);
+                
+            } else {
+                errorMessage.classList.add('show');
+                passwordInput.classList.add('error');
+                passwordInput.value = '';
+                passwordInput.focus();
+                
+                setTimeout(() => {
+                    passwordInput.classList.remove('error');
+                }, 500);
+            }
+        }
+        
+        startBtn.addEventListener('click', checkPassword);
+        passwordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+        
+        passwordInput.focus();
+        
+        // ===== BIRTHDAY PAGE FUNCTIONS =====
+        function initializeBirthdayPage() {
+            // --- Live Age Counter ---
+            const birthDate = new Date('2005-08-06T00:00:00');
+            const countdownElement = document.getElementById('countdown');
+
+            function updateAge() {
+                const now = new Date();
+                let years = now.getFullYear() - birthDate.getFullYear();
+                let months = now.getMonth() - birthDate.getMonth();
+                let days = now.getDate() - birthDate.getDate();
+                let hours = now.getHours() - birthDate.getHours();
+                let minutes = now.getMinutes() - birthDate.getMinutes();
+                let seconds = now.getSeconds() - birthDate.getSeconds();
+
+                if (seconds < 0) { seconds += 60; minutes--; }
+                if (minutes < 0) { minutes += 60; hours--; }
+                if (hours < 0) { hours += 24; days--; }
+                if (days < 0) {
+                    const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+                    days += prevMonth.getDate();
+                    months--;
+                }
+                if (months < 0) { months += 12; years--; }
+
+                if (countdownElement) {
+                    countdownElement.innerHTML = `${years}y ${months}m ${days}d <br> ${hours}h ${minutes}m ${seconds}s`;
+                }
+            }
+            setInterval(updateAge, 1000);
+            updateAge();
+
+            // --- Hall of Fame Scroller ---
+            const scroller = document.getElementById('hall-of-fame-scroller');
+            const scrollLeftBtn = document.getElementById('scroll-left-btn');
+            const scrollRightBtn = document.getElementById('scroll-right-btn');
+            
+            if (scroller && scrollLeftBtn && scrollRightBtn) {
+                const firstCard = scroller.querySelector('.snap-center');
+                if (firstCard) {
+                    const cardWidth = firstCard.offsetWidth + parseInt(getComputedStyle(firstCard.parentElement).gap || 32);
+                    
+                    scrollRightBtn.addEventListener('click', () => {
+                        scroller.scrollBy({ left: cardWidth, behavior: 'smooth' });
+                    });
+                    scrollLeftBtn.addEventListener('click', () => {
+                        scroller.scrollBy({ left: -cardWidth, behavior: 'smooth' });
+                    });
+                }
+            }
+
+            // --- Audio Player ---
+            const audio = document.getElementById('bg-music');
+            const playBtn = document.getElementById('play-audio-btn');
+            
+            if (playBtn && audio) {
+                playBtn.addEventListener('click', function() {
+                    if (audio.paused) {
+                        audio.play().catch(function(error) {
+                            console.log('Audio play failed:', error);
+                        });
+                        playBtn.innerHTML = '🎵 Pause Music';
+                        playBtn.classList.remove('bg-pink-500');
+                        playBtn.classList.add('bg-purple-500');
+                    } else {
+                        audio.pause();
+                        playBtn.innerHTML = '🎵 Play Music';
+                        playBtn.classList.remove('bg-purple-500');
+                        playBtn.classList.add('bg-pink-500');
+                    }
+                });
+            }
+
+            // --- Sakura Petal Animation ---
+            const canvas = document.getElementById('sakura-canvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                let petals = [];
+                const numPetals = 50;
+
+                function resizeCanvas() {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                }
+                window.addEventListener('resize', resizeCanvas);
+                resizeCanvas();
+
+                function Petal() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height * 2 - canvas.height;
+                    this.w = 25 + Math.random() * 15;
+                    this.h = 20 + Math.random() * 10;
+                    this.opacity = this.w / 40;
+                    this.flip = Math.random();
+                    this.xSpeed = 1.5 + Math.random() * 2;
+                    this.ySpeed = 1 + Math.random() * 1;
+                    this.flipSpeed = Math.random() * 0.03;
+                }
+
+                Petal.prototype.draw = function() {
+                    if (this.y > canvas.height || this.x > canvas.width) {
+                        this.x = -this.w;
+                        this.y = Math.random() * canvas.height * 2 - canvas.height;
+                        this.xSpeed = 1.5 + Math.random() * 2;
+                        this.ySpeed = 1 + Math.random() * 1;
+                        this.flip = Math.random();
+                    }
+                    ctx.globalAlpha = this.opacity;
+                    ctx.beginPath();
+                    ctx.moveTo(this.x, this.y);
+                    ctx.bezierCurveTo(this.x + this.w / 2, this.y - this.h / 2, this.x + this.w, this.y, this.x + this.w / 2, this.y + this.h / 2);
+                    ctx.bezierCurveTo(this.x, this.y + this.h, this.x - this.w / 2, this.y, this.x, this.y);
+                    ctx.closePath();
+                    ctx.fillStyle = '#FFB7C5';
+                    ctx.fill();
+                }
+
+                Petal.prototype.update = function() {
+                    this.x += this.xSpeed;
+                    this.y += this.ySpeed;
+                    this.flip += this.flipSpeed;
+                    this.draw();
+                }
+
+                function createPetals() {
+                    petals = [];
+                    for (let i = 0; i < numPetals; i++) {
+                        petals.push(new Petal());
+                    }
+                }
+
+                function animate() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    petals.forEach(petal => {
+                        petal.update();
+                    });
+                    requestAnimationFrame(animate);
+                }
+
+                createPetals();
+                animate();
+            }
+        }
+    </script>
+</body>
+</html>
